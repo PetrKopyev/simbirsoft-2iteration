@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import 'normalize.css';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import '@/styles/_main.scss';
 import Vuelidate from 'vuelidate';
@@ -12,6 +14,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 Vue.config.productionTip = false;
 
+Vue.use(ElementUI);
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(Vuelidate);

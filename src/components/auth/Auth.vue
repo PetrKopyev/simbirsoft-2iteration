@@ -79,15 +79,16 @@
                 <a
                   class="auth__links-link"
                   href="#"
-                >Запросить доступ</a>
+                >
+                  Запросить доступ
+                </a>
 
-                <button
+                <router-link
+                  to="/admin-panel"
                   class="auth__links-btn"
-                  type="submit"
-                  :disabled="disabledBtn"
                 >
                   Войти
-                </button>
+                </router-link>
               </div>
             </b-form>
           </div>
@@ -110,9 +111,6 @@ export default {
     };
   },
   computed: {
-    disabledBtn() {
-      return this.$v.form.email.$invalid || this.$v.form.password.$invalid;
-    },
   },
   methods: {
     onSubmit(event) {
@@ -140,7 +138,7 @@ export default {
   height: 100vh;
   font-style: normal;
   font-weight: 400;
-  background-color: #F5F6F8;
+  background-color: $light-grayish-blue;
 ;
 
   &__block {
@@ -160,7 +158,7 @@ export default {
       line-height: 20px;
       text-align: center;
       letter-spacing: -0.4375px;
-      color: #3D5170;
+      color: $very-dark-desaturated-blue;
       margin: 19px 0 35px 0;
     }
   }
@@ -204,6 +202,10 @@ export default {
       line-height: 12px;
       letter-spacing: -0.18421px;
       text-decoration: none;
+
+      &:hover {
+        color: $dark-grey;
+      }
     }
 
     &-btn {
@@ -221,6 +223,12 @@ export default {
       letter-spacing: -0.0821429px;
       color: $white;
       padding: 10px 40px;
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        color: $dark-grey;
+      }
     }
   }
 
