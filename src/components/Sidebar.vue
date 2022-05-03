@@ -1,67 +1,104 @@
 <template>
-  <el-row class="sidebar">
-    <el-col>
-      <div class="sidebar__logo">
-        <img
-          class="sidebar__logo-img"
-          src="@/assets/image/logo-icon.png"
-          alt="icon"
-        >
-        <span class="sidebar__logo-text">Need for drive</span>
-      </div>
-      <el-menu
-        class="el-menu-vertical-demo"
+  <div class="sidebar">
+    <div class="sidebar__logo">
+      <img
+        class="sidebar__logo-img"
+        src="@/assets/image/logo-icon.png"
+        alt="icon"
       >
-        <el-menu-item index="1">
-          <i class="el-icon-location" />
-          <span>Карточка автомобиля</span>
-        </el-menu-item>
-        <el-menu-item index="2">
-          <i class="el-icon-menu" />
-          <span>Список авто</span>
-        </el-menu-item>
-        <el-menu-item
-          index="3"
-          active
-        >
-          <i class="el-icon-setting" />
-          <span>Заказы</span>
-        </el-menu-item>
-      </el-menu>
-    </el-col>
-  </el-row>
+      <span class="sidebar__logo-text">Need for car</span>
+    </div>
+    <el-menu
+      router
+      class="el-menu-vertical-demo"
+    >
+      <el-menu-item index="/admin-panel/car">
+        <i>
+          <app-svg icon-name="write">
+            <icon-car />
+          </app-svg>
+        </i>
+        <span>Карточка автомобиля</span>
+      </el-menu-item>
+      <el-menu-item index="/admin-panel/cars">
+        <i>
+          <app-svg icon-name="write">
+            <icon-cars />
+          </app-svg>
+        </i>
+        <span>Список авто</span>
+      </el-menu-item>
+      <el-menu-item index="/admin-panel/orderlist">
+        <i>
+          <app-svg icon-name="write">
+            <icon-order />
+          </app-svg>
+        </i>
+
+        <span>Заказы</span>
+      </el-menu-item>
+    </el-menu>
+  </div>
 </template>
 
 <script>
+import AppSvg from '@/components/AppSvg.vue';
+import IconCar from '@/components/icons/IconCar.vue';
+import IconCars from '@/components/icons/IconCars.vue';
+import IconOrder from '@/components/icons/IconOrder.vue';
+
 export default {
   name: 'Sidebar',
-  data() {
-    return {
-    };
+  components: {
+    AppSvg,
+    IconCar,
+    IconCars,
+    IconOrder,
   },
 };
 </script>
 
 <style lang="scss">
 .sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
   font-family: 'Helvetica', sans-serif;
   font-style: normal;
-  max-width: 285px;
+  width: 20%;
   height: 100vh;
   box-shadow: 0px 1px 75px rgba(90, 97, 105, 0.11),
   0px 2px 4px rgba(90, 97, 105, 0.12), 0px 7.5px 11px rgba(90, 97, 105, 0.1),
   0px 3.5px 17.5px rgba(165, 182, 201, 0.1);
 
+  @include tablet {
+    width: 10%;
+    align-items: center;
+  }
+
+  @include mobile {
+    height: 55px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+
   &__logo {
     display: flex;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
     width: 100%;
-    box-shadow: inset 0px -1px 0px #E1E5EB;
+    height: 67.5px;
+
+    @include mobile {
+      width: 10%;
+    }
 
     &-img {
       width: 21.5px;
       height: 21.5px;
-      margin: 23px 7px 23px 49px;
+      margin-right: 7px;
     }
 
     &-text {
@@ -71,6 +108,9 @@ export default {
       display: flex;
       align-items: center;
       color: $very-dark-blue;
+      @include tablet {
+        display: none;
+      }
     }
   }
 
@@ -79,34 +119,78 @@ export default {
 .is-active {
   border-left: 4px solid $pure-blue;
   color: $pure-blue !important;
-  background-color: #FBFBFB !important;
+  background-color: $very-light-gray !important;
+
+  @include mobile {
+    border-left: none;
+    border-top: 4px solid $pure-blue;
+  }
 }
 
 .el-menu-item {
-  box-shadow: inset 0px -1px 0px #E1E5EB;
-}
-</style>
+  box-shadow: inset 0px 1px 0px $light-grayish-blue;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.234375px;
+  color: $very-dark-blue;
+  display: flex;
+  white-space: normal;
+  align-items: center;
 
-<!--<div class="sidebar">-->
-<!--<div class="sidebar__logo">-->
-<!--  <img-->
-<!--    class="sidebar__logo-img"-->
-<!--    src="@/assets/image/logo-icon.png"-->
-<!--    alt="icon"-->
-<!--  >-->
-<!--  <span class="sidebar__logo-text">Need for drive</span>-->
-<!--</div>-->
-<!--<div-->
-<!--  v-for="(item, index) in nav"-->
-<!--  :key="index"-->
-<!--  class="sidebar__navigation"-->
-<!--  :class="active"-->
-<!--&gt;-->
-<!--  <div class="sidebar__navigation-img">-->
-<!--    <img-->
-<!--      :src="require('@/assets/image/' + item.img)"-->
-<!--    >-->
-<!--  </div>-->
-<!--  <span class="sidebar__navigation-txt">{{ item.translate }}</span>-->
-<!--</div>-->
-<!--</div>-->
+  &:first-child {
+    @media screen and (max-width: 1089px) {
+      line-height: 28px;
+    }
+  }
+
+  &:last-child {
+    box-shadow: inset 0px -1px 0px $light-grayish-blue, inset 0px 1px 0px $light-grayish-blue;;
+  }
+}
+
+.el-menu-vertical-demo span {
+  margin-left: 11px;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.el-menu {
+  border-right: none;
+  @include tablet {
+    width: 100%;
+  }
+  @include mobile {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+}
+
+a {
+  text-decoration: none !important;
+}
+
+.el-menu-item i {
+  color: $light-grayish-blue-4;
+}
+
+.el-menu-item {
+  @include tablet {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  @include mobile {
+    width: 33%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+</style>
