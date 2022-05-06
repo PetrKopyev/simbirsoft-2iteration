@@ -1,20 +1,19 @@
 <template>
-  <div class="car">
+  <section class="car">
     <h1 class="title">
       Карточка автомобиля
     </h1>
     <div class="car__blocks">
-      <div class="car__block-info">
+      <section class="car__block-info">
         <div class="car__block-info__load">
-          <div class="car__block-info__load-img">
-            <img
-              src="@/assets/image/car.png"
-              alt="car"
-            >
-          </div>
-          <h3 class="car__block-info__load-name">
+          <img
+            class="car__block-info__load-img"
+            src="@/assets/image/car.png"
+            alt="car"
+          >
+          <h2 class="car__block-info__load-name">
             Hyndai, i30 N
-          </h3>
+          </h2>
           <span class="car__block-info__load-descr">Компакт-кар</span>
           <div class="car__block-info__load-upload file_upload">
             <div>Выберите файл...</div>
@@ -22,7 +21,6 @@
             <input type="file">
           </div>
         </div>
-        <hr>
         <div class="car__block-info__filled">
           <div class="car__block-info__filled-about">
             <span>Заполнено</span>
@@ -40,44 +38,47 @@
             soluta qui quae quod dolorum sint alias, possimus illum assumenda eligendi cumque?
           </p>
         </div>
-      </div>
+      </section>
       <div class="car__block-set">
         <h3>Настройки автомобиля</h3>
-        <div class="car__block-set__auto">
+        <form class="car__block-set__auto">
           <div class="car__block-set__auto-model">
-            <span>Модель автомобиля</span>
+            <label for="modelCar">Модель автомобиля</label>
             <input
+              id="modelCar"
               type="text"
               placeholder="Введите модель автомобиля"
             >
           </div>
           <div class="car__block-set__auto-model">
-            <span>Тип автомобиля</span>
+            <label for="typeCar">Тип автомобиля</label>
             <input
+              id="typeCar"
               type="text"
               placeholder="Введите тип автомобиля"
             >
           </div>
           <div class="car__block-set__auto-model">
-            <span>Доступные цвета</span>
+            <label for="colorsForPick">Доступные цвета</label>
             <div class="car__block-set__auto-model__input">
               <input
+                id="colorsForPick"
                 v-model="newColor"
                 type="text"
                 placeholder="Введите цвет"
               >
-              <button @click="addColor">
-                <span>+</span>
+              <button @click.prevent="addColor">
+                +
               </button>
             </div>
           </div>
-        </div>
+        </form>
         <div class="car__block-set__colors">
-          <ul
-            v-for="(color, index) in colors"
-            :key="index"
-          >
-            <li>
+          <ul>
+            <li
+              v-for="(color, index) in colors"
+              :key="index"
+            >
               <input type="checkbox">
               <span>{{ color }}</span>
             </li>
@@ -98,7 +99,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -113,7 +114,7 @@ export default {
   },
   methods: {
     addColor() {
-      if (this.newColor !== '') {
+      if (this.newColor) {
         this.colors.push(this.newColor);
         this.newColor = '';
       }
@@ -192,7 +193,8 @@ export default {
 
       &__filled {
         margin-top: 14px;
-        padding: 0 22px;
+        padding: 14px 22px;
+        box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.12), 0px 1px 0px rgba(0, 0, 0, 0.12);
 
         &-about {
           margin-bottom: 10px;
@@ -301,15 +303,11 @@ export default {
               border-radius: 4px;
               background-color: $white;
               align-items: center;
-
-              & span {
-                color: $grayish-blue;
-                font-size: 26px;
-              }
+              color: $grayish-blue;
             }
           }
 
-          & span {
+          & label {
             font-family: 'Helvetica';
             font-style: normal;
             font-weight: 400;
@@ -344,13 +342,14 @@ export default {
 
         & ul {
           list-style-type: none;
-          margin-bottom: 8px;
+
           padding: 0;
 
           & li {
             align-items: center;
             display: flex;
             flex-direction: row;
+            margin-bottom: 8px;
 
             & span {
               font-weight: 400;
@@ -416,10 +415,6 @@ export default {
       }
     }
   }
-}
-
-hr  {
-  margin: 0 !important;
 }
 
 /* Input file*/
