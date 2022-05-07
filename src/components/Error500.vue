@@ -3,7 +3,7 @@
     <div class="error__text">
       <h1>500</h1>
       <h2>Что то пошло не так</h2>
-      <h4>Попробуйте перезагрузить страницу</h4>
+      <h3>Попробуйте перезагрузить страницу</h3>
       <button class="auth__links-btn">
         Назад
       </button>
@@ -32,6 +32,10 @@ export default {
     align-items: center;
     height: 100%;
 
+    @include mobile {
+      margin: 0 10px;
+    }
+
     & h1 {
       font-weight: 500;
       font-size: 75px;
@@ -39,6 +43,11 @@ export default {
       letter-spacing: -5.76923px;
       color: $light-grayish-blue-4;
       margin-bottom: 13px;
+
+      @include mobile {
+        font-size: 45px;
+        line-height: 48px;
+      }
     }
 
     & h2 {
@@ -50,9 +59,14 @@ export default {
       letter-spacing: -2.5px;
       color: $very-dark-desaturated-blue;
       margin-bottom: 15px;
+
+      @include mobile {
+        font-size: 30px;
+        line-height: 28px;
+      }
     }
 
-    & h4 {
+    & h3 {
       font-family: 'Helvetica';
       font-style: normal;
       font-weight: 400;
@@ -61,6 +75,11 @@ export default {
       letter-spacing: -0.5px;
       color: $dark-grayish-blue-2;
       margin-bottom: 35px;
+
+      @include mobile {
+        font-size: 15px;
+        line-height: 15px;
+      }
     }
   }
 }
