@@ -9,7 +9,7 @@ module.exports = {
     },
   },
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/simbirsoft-2/'
+    ? '/simbirsoft-2iteration/'
     : '/',
   chainWebpack: (config) => {
     config.resolve.alias
