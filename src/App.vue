@@ -16,8 +16,9 @@ export default {
 </script>
 
 <style lang="scss">
-body {
-  font-family: 'Roboto', sans-serif;
+#app {
+  width: 100%;
   height: 100%;
 }
+
 </style>

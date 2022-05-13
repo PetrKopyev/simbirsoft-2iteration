@@ -1,97 +1,95 @@
 <template>
   <div class="auth">
-    <div class="container">
-      <div class="row">
-        <div>
-          <div class="auth__icon">
-            <div class="auth__icon-wrap">
-              <img
-                class="auth__icon-img"
-                src="@/assets/image/logo-icon.png"
-                alt="icon"
-              >
-              <span class="auth__icon-logo">Need for drive</span>
-            </div>
-          </div>
-          <div class="auth__block">
-            <div class="auth__block-h">
-              Вход
-            </div>
-            <b-form
-              novalidate
-              @submit="onSubmit"
+    <div class="row">
+      <div>
+        <div class="auth__icon">
+          <div class="auth__icon-wrap">
+            <img
+              class="auth__icon-img"
+              src="@/assets/image/logo-icon.png"
+              alt="icon"
             >
-              <b-form-group
-                id="input-group-1"
-                label="Почта"
-                label-for="input-1"
-              >
-                <b-form-input
-                  id="input-1"
-                  v-model="form.email"
-                  type="email"
-                  placeholder="admin@ss.com"
-                  :class="{'is-invalid': $v.form.email.$error}"
-                  @blur="$v.form.email.$touch()"
-                />
-                <div
-                  v-if="!$v.form.email.required"
-                  class="invalid-feedback auth__error"
-                >
-                  Поле обязательно для заполнения
-                </div>
-                <div
-                  v-if="!$v.form.email.email"
-                  class="invalid-feedback auth__error"
-                >
-                  Поле должно быть email адресом
-                </div>
-              </b-form-group>
-
-              <b-form-group
-                id="input-group-2"
-                label="Пароль"
-                label-for="input-2"
-              >
-                <b-form-input
-                  id="input-2"
-                  v-model="form.password"
-                  type="password"
-                  placeholder="••••••••••••"
-                  :class="{'is-invalid': $v.form.password.$error}"
-                  @blur="$v.form.password.$touch()"
-                />
-                <div
-                  v-if="!$v.form.password.required"
-                  class="invalid-feedback auth__error"
-                >
-                  Поле обязательно для заполнения
-                </div>
-                <div
-                  v-if="!$v.form.password.minLength"
-                  class="invalid-feedback auth__error"
-                >
-                  Не меньше 6 символов
-                </div>
-              </b-form-group>
-
-              <div class="auth__links">
-                <a
-                  class="auth__links-link"
-                  href="#"
-                >
-                  Запросить доступ
-                </a>
-
-                <router-link
-                  to="/admin-panel"
-                  class="auth__links-btn"
-                >
-                  Войти
-                </router-link>
-              </div>
-            </b-form>
+            <span class="auth__icon-logo">Need for drive</span>
           </div>
+        </div>
+        <div class="auth__block">
+          <div class="auth__block-h">
+            Вход
+          </div>
+          <b-form
+            novalidate
+            @submit="onSubmit"
+          >
+            <b-form-group
+              id="input-group-1"
+              label="Почта"
+              label-for="input-1"
+            >
+              <b-form-input
+                id="input-1"
+                v-model="form.email"
+                type="email"
+                placeholder="admin@ss.com"
+                :class="{'is-invalid': $v.form.email.$error}"
+                @blur="$v.form.email.$touch()"
+              />
+              <div
+                v-if="!$v.form.email.required"
+                class="invalid-feedback auth__error"
+              >
+                Поле обязательно для заполнения
+              </div>
+              <div
+                v-if="!$v.form.email.email"
+                class="invalid-feedback auth__error"
+              >
+                Поле должно быть email адресом
+              </div>
+            </b-form-group>
+
+            <b-form-group
+              id="input-group-2"
+              label="Пароль"
+              label-for="input-2"
+            >
+              <b-form-input
+                id="input-2"
+                v-model="form.password"
+                type="password"
+                placeholder="••••••••••••"
+                :class="{'is-invalid': $v.form.password.$error}"
+                @blur="$v.form.password.$touch()"
+              />
+              <div
+                v-if="!$v.form.password.required"
+                class="invalid-feedback auth__error"
+              >
+                Поле обязательно для заполнения
+              </div>
+              <div
+                v-if="!$v.form.password.minLength"
+                class="invalid-feedback auth__error"
+              >
+                Не меньше 6 символов
+              </div>
+            </b-form-group>
+
+            <div class="auth__links">
+              <a
+                class="auth__links-link"
+                href="#"
+              >
+                Запросить доступ
+              </a>
+
+              <router-link
+                to="/admin-panel/error500"
+                class="auth__links-btn"
+              >
+                Войти
+              </router-link>
+            </div>
+          </b-form>
         </div>
       </div>
     </div>
@@ -225,6 +223,7 @@ export default {
       padding: 10px 40px;
       cursor: pointer;
       text-decoration: none;
+      height: 29px;
 
       &:hover {
         color: $dark-grey;
