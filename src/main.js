@@ -19,7 +19,7 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(Vuelidate);
 
-new Vue({
+window.vm = new Vue({
   router,
   store,
   render: (h) => h(App),

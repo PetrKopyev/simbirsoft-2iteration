@@ -33,10 +33,11 @@
         <hr>
         <div class="car__block-info__text">
           <h4>Описание</h4>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio eaque, quidem, commodi
-            soluta qui quae quod dolorum sint alias, possimus illum assumenda eligendi cumque?
-          </p>
+          <textarea
+            placeholder="Введите описание"
+            cols="30"
+            rows="5"
+          />
         </div>
       </section>
       <div class="car__block-set">
@@ -56,6 +57,38 @@
               id="typeCar"
               type="text"
               placeholder="Введите тип автомобиля"
+            >
+          </div>
+          <div class="car__block-set__auto-model">
+            <label for="typeCar">Государственный номер</label>
+            <input
+              id="numberCar"
+              type="text"
+              placeholder="Введите номер авто"
+            >
+          </div>
+          <div class="car__block-set__auto-model">
+            <label for="typeCar">Топливо</label>
+            <input
+              id="tankCar"
+              type="number"
+              placeholder="Введите вместимость бака"
+            >
+          </div>
+          <div class="car__block-set__auto-model">
+            <label for="typeCar">Минимальная цена</label>
+            <input
+              id="minPriceCar"
+              type="number"
+              placeholder="Введите минимальную цену"
+            >
+          </div>
+          <div class="car__block-set__auto-model">
+            <label for="typeCar">Максимальная цена</label>
+            <input
+              id="maxPriceCar"
+              type="number"
+              placeholder="Введите максимальную цену"
             >
           </div>
           <div class="car__block-set__auto-model">
@@ -108,7 +141,7 @@ export default {
   data() {
     return {
       newColor: '',
-      colors: ['Красный', 'Белый', 'Черный'],
+      colors: [],
 
     };
   },
@@ -243,13 +276,19 @@ export default {
           margin-bottom: 13px;
         }
 
-        & p {
+        & textarea {
           font-weight: 400;
           font-size: 13.5px;
           line-height: 20px;
           letter-spacing: -0.408571px;
           color: $very-dark-grayish-blue;
           margin: 0;
+          padding: 5px;
+          resize: none;
+
+          @include mobile {
+            width: 100%;
+          }
         }
       }
     }

@@ -19,7 +19,7 @@
       <span class="header__bell-count">2</span>
     </div>
     <div class="header__admin">
-      <el-dropdown>
+      <el-dropdown @command="onMenuClick">
         <img
           class="header__admin-avatar"
           src="@/assets/image/avatar.png"
@@ -32,7 +32,9 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>Помощь</el-dropdown-item>
           <el-dropdown-item>Настройки</el-dropdown-item>
-          <el-dropdown-item>Выйти</el-dropdown-item>
+          <el-dropdown-item command="logout">
+            Выйти
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -40,8 +42,20 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'Header',
+
+  methods: {
+    ...mapActions('auth', ['logout']),
+
+    onMenuClick(link) {
+      if (link === 'logout') {
+        this.logout();
+      }
+    },
+  },
 };
 </script>
 
