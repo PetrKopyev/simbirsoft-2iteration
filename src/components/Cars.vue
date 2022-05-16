@@ -13,6 +13,7 @@
             <el-option
               v-for="(brand, index) in brands"
               :key="index"
+              :value="brand.name"
               :label="brand.name"
             />
           </el-select>
