@@ -21,8 +21,12 @@ export default {
         const categories = data.data;
 
         commit('SET_CATEGORIES', categories);
+
+        return Promise.resolve();
       } catch (e) {
         console.error(e);
+
+        return Promise.reject();
       }
     },
 

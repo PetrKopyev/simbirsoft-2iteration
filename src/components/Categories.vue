@@ -23,23 +23,25 @@
           </tr>
         </thead>
 
-        <tbody class="table">
+        <tbody>
           <tr
             v-for="category in categories"
             :key="category.id"
           >
             <td>{{ category.name }}</td>
 
-            <td>{{ category.description }}</td>
+            <td class="categories__descr">
+              {{ category.description }}
+            </td>
 
             <td>
-              <el-button-group class="order-list__order-buttons">
+              <el-button-group class="order-list__order-buttons buttons">
                 <el-button
                   class="change"
                   type="outline-primary"
                   @click="onOpenEditCategoryDialog(category)"
                 >
-                  Изменить
+                  <pre>Изменить</pre>
                 </el-button>
 
                 <el-popconfirm
@@ -51,7 +53,7 @@
                     class="cancel"
                     type="outline-primary"
                   >
-                    Удалить
+                    <pre>Удалить</pre>
                   </el-button>
                 </el-popconfirm>
               </el-button-group>
@@ -62,6 +64,7 @@
     </div>
 
     <el-dialog
+      :show-close="false"
       :title="isEditMode ? 'Редактирование категории' : 'Новая категория'"
       :visible.sync="dialogFormVisible"
     >
@@ -193,13 +196,17 @@ export default {
 <style lang="scss">
 .categories {
   height: 100%;
+  overflow: auto;
 
   &__table {
     width: 100%;
   }
+
+  &__descr {
+    @include desktop-min {
+      max-width: 300px;
+    }
+  }
 }
 
-.button-create {
-  margin-bottom: 15px;
-}
 </style>

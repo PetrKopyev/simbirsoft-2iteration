@@ -3,7 +3,7 @@
     <h1 class="title">
       Заказы
     </h1>
-    <div class="order-list__block">
+    <div class="block">
       <div class="order-list__header">
         <div>
           <el-select
@@ -11,8 +11,9 @@
             placeholder="За неделю"
           >
             <el-option
-              v-for="time in times"
+              v-for="(time, index) in times"
               :key="time.value"
+              :value="index"
               :label="time.label"
             />
           </el-select>
@@ -21,8 +22,9 @@
             placeholder="Elantra"
           >
             <el-option
-              v-for="model in models"
+              v-for="(model, index) in models"
               :key="model.value"
+              :value="index"
               :label="model.label"
             />
           </el-select>
@@ -31,8 +33,9 @@
             placeholder="Ульяновск"
           >
             <el-option
-              v-for="city in cities"
+              v-for="(city, index) in cities"
               :key="city.value"
+              :value="index"
               :label="city.label"
             />
           </el-select>
@@ -41,8 +44,9 @@
             placeholder="В процессе"
           >
             <el-option
-              v-for="status in statuses"
+              v-for="(status, index) in statuses"
               :key="status.value"
+              :value="index"
               :label="status.label"
             />
           </el-select>
@@ -148,7 +152,7 @@
           background
           layout="prev, pager, next"
           :total="310"
-          :pager-count="4"
+          :pager-size="4"
         />
       </div>
     </div>

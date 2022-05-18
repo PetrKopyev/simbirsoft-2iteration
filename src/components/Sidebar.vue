@@ -52,10 +52,15 @@
 
         <span>Пункты выдачи</span>
       </el-menu-item>
-      <el-menu-item index="/tariffs">
+      <el-menu-item index="/rates">
         <i class="el-icon-files" />
 
         <span>Тарифы</span>
+      </el-menu-item>
+      <el-menu-item index="/rate-types">
+        <i class="el-icon-document-copy" />
+
+        <span>Типы тарифов</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -101,6 +106,7 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: row;
+    overflow: auto;
   }
 
   &__logo {

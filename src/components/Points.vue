@@ -3,7 +3,10 @@
     <h1 class="title">
       Пункты выдачи
     </h1>
-    <div class="block">
+    <div
+      v-loading="isFormLoading"
+      class="block"
+    >
       <el-button
         class="auth__links-btn button-create"
         type="text"
@@ -11,138 +14,204 @@
       >
         Создать
       </el-button>
-      <table>
-        <tbody class="table">
+      <table class="points__table">
+        <thead>
           <tr>
             <th>Название</th>
-            <td
-              v-for="(point, index) in points"
-              :key="index"
-            >
-              {{ point }}
-            </td>
-          </tr>
-          <tr>
             <th>Город</th>
-            <td
-              v-for="(city, index) in cities"
-              :key="index"
-            >
-              {{ city }}
-            </td>
-          </tr>
-          <tr>
-            <th>Адреса</th>
-            <td
-              v-for="(address, index) in adresses"
-              :key="index"
-            >
-              {{ address }}
-            </td>
-          </tr>
-          <tr>
+            <th>Адрес</th>
             <th>Действия</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            v-for="point in points"
+            :key="point.id"
+          >
+            <td>{{ point.name }}</td>
+            <td>г. {{ point.cityId.name }}</td>
+            <td>{{ point.address }}</td>
+
             <td>
-              <el-button-group class="order-list__order-buttons">
+              <el-button-group class="order-list__order-buttons buttons">
                 <el-button
                   class="change"
                   type="outline-primary"
+                  @click="onOpenEditPointDialog(point)"
                 >
-                  Изменить
+                  <pre>Изменить</pre>
                 </el-button>
-                <el-button
-                  class="cancel"
-                  type="outline-primary"
+
+                <el-popconfirm
+                  title="Вы уверены, что хотите удалить?"
+                  @confirm="onDeletePoint(point.id)"
                 >
-                  Отмена
-                </el-button>
-              </el-button-group>
-              <el-button-group class="order-list__order-buttons">
-                <el-button
-                  class="change"
-                  type="outline-primary"
-                >
-                  Изменить
-                </el-button>
-                <el-button
-                  class="cancel"
-                  type="outline-primary"
-                >
-                  Отмена
-                </el-button>
+                  <el-button
+                    slot="reference"
+                    class="cancel"
+                    type="outline-primary"
+                  >
+                    <pre>Удалить</pre>
+                  </el-button>
+                </el-popconfirm>
               </el-button-group>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
     <el-dialog
-      title="Добавление города"
+      :show-close="false"
+      :title="isEditMode ? 'Редактирование пункта выдачи' : 'Новый пункт выдачи'"
       :visible.sync="dialogFormVisible"
     >
       <el-form>
         <el-form-item
-          v-model="pointNew.name"
           label="Название пункта"
           :label-width="formLabelWidth"
         >
           <el-input
+            v-model="pointNew.name"
             autocomplete="off"
           />
         </el-form-item>
         <el-form-item
-          v-model="pointNew.cityPoint"
           label="Название города"
           :label-width="formLabelWidth"
         >
-          <el-input
-            autocomplete="off"
-          />
+          <el-select
+            v-model="pointNew.cityId"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="city in cities"
+              :key="city.id"
+              :value="city.id"
+              :label="city.name"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item
-          v-model="pointNew.address"
-          label="Адресс пункта выдачи"
+          label="Адрес пункта выдачи"
           :label-width="formLabelWidth"
         >
           <el-input
+            v-model="pointNew.address"
             autocomplete="off"
           />
         </el-form-item>
       </el-form>
-      <span
+      <div
         slot="footer"
         class="dialog-footer"
       >
         <el-button
           class="auth__links-btn"
-          @click="dialogFormVisible = false"
-        >Отменить</el-button>
+          type="primary"
+          :disabled="!pointNew.name || !pointNew.cityId || !pointNew.address"
+          @click="onConfirm"
+        >
+          Сохранить
+        </el-button>
+
         <el-button
           class="auth__links-btn"
-          type="primary"
-          @click="dialogFormVisible = false"
-        >Создать</el-button>
-      </span>
+          type="plain"
+          @click="onDialogClose"
+        >
+          Отменить
+        </el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+
 export default {
   name: 'Points',
   data() {
     return {
-      points: ['Библиотека', 'Клуб'],
-      cities: ['Ульяновск', 'Уфа'],
-      adresses: ['Циолковского 5', 'Тургенева 12'],
-      formLabelWidth: '120px',
+      isFormLoading: false,
+      formLabelWidth: '130px',
       dialogFormVisible: false,
       pointNew: {
-        point: '',
-        cityPoint: '',
+        name: '',
+        cityId: '',
         address: '',
       },
     };
+  },
+  computed: {
+    ...mapState('points', ['points']),
+    ...mapState('cities', ['cities']),
+
+    isEditMode() {
+      return !!this.pointNew.id;
+    },
+  },
+
+  created() {
+    this.fetchPoints();
+    this.fetchCities();
+  },
+
+  methods: {
+    ...mapActions('points', ['fetchPoints', 'updatePoint', 'createPoint', 'deletePoint']),
+    ...mapActions('cities', ['fetchCities']),
+
+    async onConfirm() {
+      this.isFormLoading = true;
+
+      const cityId = this.cities.find((item) => item.id === this.pointNew.cityId);
+
+      if (this.isEditMode) {
+        await this.updatePoint({
+          id: this.pointNew.id,
+          name: this.pointNew.name,
+          cityId,
+          address: this.pointNew.address,
+        });
+      } else {
+        await this.createPoint({
+          name: this.pointNew.name,
+          cityId,
+          address: this.pointNew.address,
+        });
+      }
+
+      this.isFormLoading = false;
+
+      this.dialogFormVisible = false;
+    },
+
+    async onDeletePoint(id) {
+      this.isFormLoading = true;
+
+      await this.deletePoint({ id });
+
+      this.isFormLoading = false;
+    },
+
+    onOpenEditPointDialog(point) {
+      const newPoint = JSON.parse(JSON.stringify(point));
+
+      newPoint.cityId = newPoint.cityId.id;
+      this.pointNew = newPoint;
+      this.dialogFormVisible = true;
+    },
+
+    onDialogClose() {
+      this.dialogFormVisible = false;
+      this.pointNew = {
+        name: '',
+        cityId: '',
+        address: '',
+      };
+    },
   },
 };
 </script>
@@ -150,6 +219,11 @@ export default {
 <style lang="scss">
 .points {
   height: 100%;
+  overflow: auto;
+
+  &__table {
+    width: 100%;
+  }
 }
 
 </style>

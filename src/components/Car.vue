@@ -44,27 +44,27 @@
         <h3>Настройки автомобиля</h3>
         <form class="car__block-set__auto">
           <div class="car__block-set__auto-model">
-            <label for="modelCar">Модель автомобиля</label>
+            <label for="modelCar">Название</label>
             <input
               id="modelCar"
               type="text"
-              placeholder="Введите модель автомобиля"
+              placeholder="Название автомобиля"
             >
           </div>
           <div class="car__block-set__auto-model">
-            <label for="typeCar">Тип автомобиля</label>
+            <label for="typeCar">Категория</label>
             <input
               id="typeCar"
               type="text"
-              placeholder="Введите тип автомобиля"
+              placeholder="Категория автомобиля"
             >
           </div>
           <div class="car__block-set__auto-model">
-            <label for="typeCar">Государственный номер</label>
+            <label for="typeCar">Номер</label>
             <input
               id="numberCar"
               type="text"
-              placeholder="Введите номер авто"
+              placeholder="Государственный рег. знак"
             >
           </div>
           <div class="car__block-set__auto-model">
@@ -72,7 +72,7 @@
             <input
               id="tankCar"
               type="number"
-              placeholder="Введите вместимость бака"
+              placeholder="Вместимость бака"
             >
           </div>
           <div class="car__block-set__auto-model">
@@ -80,7 +80,7 @@
             <input
               id="minPriceCar"
               type="number"
-              placeholder="Введите минимальную цену"
+              placeholder="Цена от"
             >
           </div>
           <div class="car__block-set__auto-model">
@@ -88,7 +88,7 @@
             <input
               id="maxPriceCar"
               type="number"
-              placeholder="Введите максимальную цену"
+              placeholder="Цена до"
             >
           </div>
           <div class="car__block-set__auto-model">
@@ -98,7 +98,7 @@
                 id="colorsForPick"
                 v-model="newColor"
                 type="text"
-                placeholder="Введите цвет"
+                placeholder="Название цвета"
               >
               <button @click.prevent="addColor">
                 +
@@ -159,20 +159,28 @@ export default {
 <style lang="scss">
 
 .car {
-  @media screen and (min-width: 767px){
-    height: 100%;
-  }
-  @include mobile {
-    margin-bottom: 15px;
+  height: 100%;
+  overflow: auto;
+
+  @include tablet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   &__blocks {
     padding: 0 32px;
+    margin: 20px 0;
     display: flex;
     flex-direction: row;
 
+    @include tablet {
+      width: 100%;
+      flex-direction: column;
+    }
+
     @include mobile {
       flex-direction: column;
-      min-height: 100%;
+      padding: 0 10px;
     }
   }
   &__block {
@@ -183,6 +191,11 @@ export default {
       box-shadow: 0px 2px 4px rgba(90, 97, 105, 0.12);
       border-radius: 9px;
       margin-right: 28px;
+
+      @include tablet {
+        margin-right: 0;
+        max-width: 100%;
+      }
 
       @include mobile {
         max-width: 100%;
@@ -377,7 +390,6 @@ export default {
         display: flex;
         flex-direction: column;
         width: 100%;
-        height: 100% ;
 
         & ul {
           list-style-type: none;
@@ -430,8 +442,17 @@ export default {
           flex-direction: row;
           margin-bottom: 10px;
 
+          @include mobile {
+            flex-direction: column;
+            width: 118px;
+          }
+
           &-save {
             margin-right: 12.5px;
+            @include mobile {
+              margin-right: 0;
+              margin-bottom: 10px;
+            }
           }
 
           &-cancel {
@@ -515,6 +536,12 @@ export default {
   color: $dark-grey;
   overflow: hidden;
   border: none;
+}
+
+.car__block-info__text textarea {
+  @include tablet {
+    width: 100%;
+  }
 }
 
 </style>

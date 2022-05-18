@@ -1,7 +1,7 @@
 <template>
-  <div class="cities">
+  <div class="rate-types">
     <h1 class="title">
-      Города
+      Типы тарифов
     </h1>
     <div
       v-loading="isFormLoading"
@@ -14,34 +14,36 @@
       >
         Создать
       </el-button>
-      <table class="cities__table">
+      <table class="rate-types__table">
         <thead>
           <tr>
             <th>Название</th>
+            <th>Длительность</th>
             <th>Действия</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="city in cities"
-            :key="city.id"
+            v-for="rateType in rateTypes"
+            :key="rateType.id"
           >
-            <td>{{ city.name }}</td>
+            <td>{{ rateType.name }}</td>
+            <td>{{ rateType.unit }}</td>
 
             <td>
               <el-button-group class="order-list__order-buttons buttons">
                 <el-button
                   class="change"
                   type="outline-primary"
-                  @click="onOpenEditCityDialog(city)"
+                  @click="onOpenEditRateTypeDialog(rateType)"
                 >
                   <pre>Изменить</pre>
                 </el-button>
 
                 <el-popconfirm
                   title="Вы уверены, что хотите удалить?"
-                  @confirm="onDeleteCity(city.id)"
+                  @confirm="onDeleteRateType(rateType.id)"
                 >
                   <el-button
                     slot="reference"
@@ -60,7 +62,7 @@
 
     <el-dialog
       :show-close="false"
-      :title="isEditMode ? 'Редактирование города' : 'Новый город'"
+      :title="isEditMode ? 'Редактирование типа тарифа' : 'Новый тип тарифа'"
       :visible.sync="dialogFormVisible"
     >
       <el-form>
@@ -69,7 +71,16 @@
           :label-width="formLabelWidth"
         >
           <el-input
-            v-model="cityNew.name"
+            v-model="rateTypeNew.name"
+            autocomplete="off"
+          />
+        </el-form-item>
+        <el-form-item
+          label="Длительность"
+          :label-width="formLabelWidth"
+        >
+          <el-input
+            v-model="rateTypeNew.unit"
             autocomplete="off"
           />
         </el-form-item>
@@ -81,7 +92,7 @@
         <el-button
           class="auth__links-btn"
           type="primary"
-          :disabled="!cityNew.name"
+          :disabled="!rateTypeNew.name || !rateTypeNew.unit"
           @click="onConfirm"
         >
           Сохранить
@@ -104,45 +115,48 @@
 import { mapActions, mapState } from 'vuex';
 
 export default {
-  name: 'Cities',
+  name: 'RateTypes',
 
   data() {
     return {
       isFormLoading: false,
       formLabelWidth: '120px',
       dialogFormVisible: false,
-      cityNew: {
+      rateTypeNew: {
         name: '',
+        unit: '',
       },
     };
   },
 
   computed: {
-    ...mapState('cities', ['cities']),
+    ...mapState('rateTypes', ['rateTypes']),
 
     isEditMode() {
-      return !!this.cityNew.id;
+      return !!this.rateTypeNew.id;
     },
   },
 
   created() {
-    this.fetchCities();
+    this.fetchRateTypes();
   },
 
   methods: {
-    ...mapActions('cities', ['fetchCities', 'createCity', 'deleteCity', 'updateCity']),
+    ...mapActions('rateTypes', ['fetchRateTypes', 'createRateType', 'deleteRateType', 'updateRateType']),
 
     async onConfirm() {
       this.isFormLoading = true;
 
       if (this.isEditMode) {
-        await this.updateCity({
-          id: this.cityNew.id,
-          name: this.cityNew.name,
+        await this.updateRateType({
+          id: this.rateTypeNew.id,
+          name: this.rateTypeNew.name,
+          unit: this.rateTypeNew.unit,
         });
       } else {
-        await this.createCity({
-          name: this.cityNew.name,
+        await this.createRateType({
+          name: this.rateTypeNew.name,
+          unit: this.rateTypeNew.unit,
         });
       }
 
@@ -151,23 +165,24 @@ export default {
       this.dialogFormVisible = false;
     },
 
-    async onDeleteCity(id) {
+    async onDeleteRateType(id) {
       this.isFormLoading = true;
 
-      await this.deleteCity({ id });
+      await this.deleteRateType({ id });
 
       this.isFormLoading = false;
     },
 
-    onOpenEditCityDialog(city) {
-      this.cityNew = JSON.parse(JSON.stringify(city));
+    onOpenEditRateTypeDialog(rateType) {
+      this.rateTypeNew = JSON.parse(JSON.stringify(rateType));
       this.dialogFormVisible = true;
     },
 
     onDialogClose() {
       this.dialogFormVisible = false;
-      this.cityNew = {
+      this.rateTypeNew = {
         name: '',
+        unit: '',
       };
     },
   },
@@ -175,7 +190,7 @@ export default {
 </script>
 
 <style lang="scss">
-.cities {
+.rate-types {
   height: 100%;
   overflow: auto;
 

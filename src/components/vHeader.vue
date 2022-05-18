@@ -30,8 +30,6 @@
         </span>
         <i class="el-icon-arrow-down el-icon--right" />
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>Помощь</el-dropdown-item>
-          <el-dropdown-item>Настройки</el-dropdown-item>
           <el-dropdown-item command="logout">
             Выйти
           </el-dropdown-item>

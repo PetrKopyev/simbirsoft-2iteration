@@ -1,7 +1,7 @@
 <template>
-  <div class="cities">
+  <div class="rates">
     <h1 class="title">
-      Города
+      Тарифы
     </h1>
     <div
       v-loading="isFormLoading"
@@ -14,34 +14,37 @@
       >
         Создать
       </el-button>
-      <table class="cities__table">
+      <table class="rates__table">
         <thead>
           <tr>
             <th>Название</th>
+            <th>Цена</th>
             <th>Действия</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="city in cities"
-            :key="city.id"
+            v-for="rate in rates"
+            :key="rate.id"
           >
-            <td>{{ city.name }}</td>
+            <td>{{ rate.rateTypeId.name }}</td>
+
+            <td>{{ rate.price }}</td>
 
             <td>
               <el-button-group class="order-list__order-buttons buttons">
                 <el-button
                   class="change"
                   type="outline-primary"
-                  @click="onOpenEditCityDialog(city)"
+                  @click="onOpenEditRateDialog(rate)"
                 >
                   <pre>Изменить</pre>
                 </el-button>
 
                 <el-popconfirm
                   title="Вы уверены, что хотите удалить?"
-                  @confirm="onDeleteCity(city.id)"
+                  @confirm="onDeleteRate(rate.id)"
                 >
                   <el-button
                     slot="reference"
@@ -60,7 +63,7 @@
 
     <el-dialog
       :show-close="false"
-      :title="isEditMode ? 'Редактирование города' : 'Новый город'"
+      :title="isEditMode ? 'Редактирование тарифа' : 'Новый тариф'"
       :visible.sync="dialogFormVisible"
     >
       <el-form>
@@ -68,8 +71,25 @@
           label="Название"
           :label-width="formLabelWidth"
         >
+          <el-select
+            v-model="rateNew.rateTypeId"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="rateTypeIdItem in rateTypes"
+              :key="`rateTypeId-${rateTypeIdItem.id}`"
+              :value="rateTypeIdItem.id"
+              :label="`${rateTypeIdItem.name} ${rateTypeIdItem.unit}`"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          label="Цена"
+          :label-width="formLabelWidth"
+        >
           <el-input
-            v-model="cityNew.name"
+            v-model="rateNew.price"
             autocomplete="off"
           />
         </el-form-item>
@@ -81,7 +101,7 @@
         <el-button
           class="auth__links-btn"
           type="primary"
-          :disabled="!cityNew.name"
+          :disabled="!rateNew.rateTypeId || !rateNew.price"
           @click="onConfirm"
         >
           Сохранить
@@ -104,45 +124,55 @@
 import { mapActions, mapState } from 'vuex';
 
 export default {
-  name: 'Cities',
+  name: 'Rates',
 
   data() {
     return {
       isFormLoading: false,
       formLabelWidth: '120px',
       dialogFormVisible: false,
-      cityNew: {
-        name: '',
+      rateNew: {
+        rateTypeId: '', // rateTypeId ID
+        price: '',
       },
     };
   },
 
   computed: {
-    ...mapState('cities', ['cities']),
+    ...mapState('rates', ['rates']),
+    ...mapState('rateTypes', ['rateTypes']),
 
     isEditMode() {
-      return !!this.cityNew.id;
+      return !!this.rateNew.id;
     },
   },
 
   created() {
-    this.fetchCities();
+    this.fetchRates();
+    this.fetchRateTypes();
   },
 
   methods: {
-    ...mapActions('cities', ['fetchCities', 'createCity', 'deleteCity', 'updateCity']),
+    ...mapActions('rates', ['fetchRates', 'createRate', 'deleteRate', 'updateRate']),
+    ...mapActions('rateTypes', ['fetchRateTypes']),
 
     async onConfirm() {
       this.isFormLoading = true;
 
+      const rateTypeId = this.rateTypes.find((item) => item.id === this.rateNew.rateTypeId);
+
+      console.log(rateTypeId);
+
       if (this.isEditMode) {
-        await this.updateCity({
-          id: this.cityNew.id,
-          name: this.cityNew.name,
+        await this.updateRate({
+          id: this.rateNew.id,
+          rateTypeId,
+          price: this.rateNew.price,
         });
       } else {
-        await this.createCity({
-          name: this.cityNew.name,
+        await this.createRate({
+          rateTypeId,
+          price: this.rateNew.price,
         });
       }
 
@@ -151,23 +181,27 @@ export default {
       this.dialogFormVisible = false;
     },
 
-    async onDeleteCity(id) {
+    async onDeleteRate(id) {
       this.isFormLoading = true;
 
-      await this.deleteCity({ id });
+      await this.deleteRate({ id });
 
       this.isFormLoading = false;
     },
 
-    onOpenEditCityDialog(city) {
-      this.cityNew = JSON.parse(JSON.stringify(city));
+    onOpenEditRateDialog(rate) {
+      const newRate = JSON.parse(JSON.stringify(rate));
+
+      newRate.rateTypeId = newRate.rateTypeId.id;
+      this.rateNew = newRate;
       this.dialogFormVisible = true;
     },
 
     onDialogClose() {
       this.dialogFormVisible = false;
-      this.cityNew = {
-        name: '',
+      this.rateNew = {
+        rateTypeId: '',
+        price: '',
       };
     },
   },
@@ -175,7 +209,7 @@ export default {
 </script>
 
 <style lang="scss">
-.cities {
+.rates {
   height: 100%;
   overflow: auto;
 
@@ -183,5 +217,4 @@ export default {
     width: 100%;
   }
 }
-
 </style>

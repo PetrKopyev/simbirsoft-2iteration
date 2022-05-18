@@ -3,56 +3,35 @@
     <h1 class="title">
       Список автомобилей
     </h1>
-    <div class="cars__block">
+    <div
+      v-loading="isLoading"
+      class="block"
+    >
       <div class="cars__filters">
         <div class="cars__filters-select">
           <el-select
-            v-model="brandValue"
-            placeholder="Марка"
+            v-model="filter.selectedCategory"
+            placeholder="Категория"
           >
             <el-option
-              v-for="(brand, index) in brands"
-              :key="index"
-              :value="brand.name"
-              :label="brand.name"
-            />
-          </el-select>
-          <el-select
-            v-model="modelValue"
-            placeholder="Модель"
-          >
-            <el-option
-              v-for="(model, index) in models"
-              :key="index"
-              :label="model.name"
-            />
-          </el-select>
-          <el-select
-            v-model="colorValue"
-            placeholder="Цвет"
-          >
-            <el-option
-              v-for="color in colors"
-              :key="color.value"
-              :label="color.name"
-            />
-          </el-select>
-          <el-select
-            v-model="tariffValue"
-            placeholder="Тариф"
-          >
-            <el-option
-              v-for="tariff in tariffs"
-              :key="tariff.value"
-              :label="tariff.name"
+              v-for="category in categories"
+              :key="category.id"
+              :value="category.id"
+              :label="category.name"
             />
           </el-select>
         </div>
         <div class="cars__filters-buttons">
-          <button class="cars__filters-buttons__reset auth__links-btn">
+          <button
+            class="cars__filters-buttons__reset auth__links-btn"
+            @click="resetFilters"
+          >
             Сбросить
           </button>
-          <button class="cars__filters-buttons__apply auth__links-btn">
+          <button
+            class="cars__filters-buttons__apply auth__links-btn"
+            @click="getCars(1)"
+          >
             Принять
           </button>
         </div>
@@ -60,17 +39,27 @@
       <hr>
       <div class="cars__list">
         <el-table
-          :data="tableData"
+          :data="mappedCars"
           style="width: 100%"
         >
           <el-table-column
-            fixed
-            prop="brand"
-            label="Марка"
+            prop="image"
+            label="Изображение"
+          >
+            <template v-slot="scope">
+              <img
+                :src="scope.row.image"
+                :alt="scope.row.name"
+              >
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="Название"
           />
           <el-table-column
-            prop="model"
-            label="Модель"
+            prop="category"
+            label="Категория"
           />
           <el-table-column
             prop="color"
@@ -82,8 +71,8 @@
             label="Гос. номер"
           />
           <el-table-column
-            prop="tariff"
-            label="Тариф"
+            prop="tank"
+            label="Топливо, л"
             width="100"
           />
           <el-table-column
@@ -96,27 +85,21 @@
           />
           <el-table-column
             label="Действия"
-            width="300"
+            width="210"
           >
             <template>
-              <el-button-group class="order-list__order-buttons">
+              <el-button-group class="order-list__order-buttons buttons">
                 <el-button
-                  class="done"
+                  class="change"
                   type="outline-primary"
                 >
-                  Готово
+                  <pre>Изменить</pre>
                 </el-button>
                 <el-button
                   class="cancel"
                   type="outline-primary"
                 >
-                  Отмена
-                </el-button>
-                <el-button
-                  class="change"
-                  type="outline-primary"
-                >
-                  Изменить
+                  <pre>Удалить</pre>
                 </el-button>
               </el-button-group>
             </template>
@@ -129,8 +112,10 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :total="310"
-          :pager-count="4"
+          :current-page.sync="currentPage"
+          :total="total"
+          :page-size="CARS_PER_PAGE"
+          @current-change="onPageChange"
         />
       </div>
     </div>
@@ -138,52 +123,83 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+import { CARS_PER_PAGE } from '@/constants/cars.contants';
+
 export default {
   name: 'Cars',
   data() {
     return {
-      brandValue: '',
-      modelValue: '',
-      colorValue: '',
-      tariffValue: '',
-      brands: [
-        { name: 'brand 1' },
-        { name: 'brand 2' },
-        { name: 'brand 3' },
-      ],
-      models: [
-        { name: 'model 1' },
-        { name: 'model 2' },
-        { name: 'model 3' },
-      ],
-      colors: [
-        { name: 'color 1' },
-        { name: 'color 2' },
-        { name: 'color 3' },
-      ],
-      tariffs: [
-        { name: 'tariff 1' },
-        { name: 'tariff 2' },
-        { name: 'tariff 3' },
-      ],
-      tableData: [{
-        brand: 'Skoda',
-        model: 'Octavia',
-        color: 'Кварц',
-        number: 'А880МЕ73',
-        tariff: 'Комфорт',
-        minPrice: 10000,
-        maxPrice: 15000,
-      }, {
-        brand: 'Kia',
-        model: 'Ceed',
-        color: 'Снежная королева',
-        number: 'О664ЕА73',
-        tariff: 'Комфорт',
-        minPrice: 8000,
-        maxPrice: 12000,
-      }],
+      isLoading: false,
+
+      currentPage: 1,
+
+      filter: {
+        selectedCategory: null,
+      },
     };
+  },
+
+  computed: {
+    ...mapState('cars', ['total', 'cars']),
+    ...mapState('categories', ['categories']),
+
+    mappedCars() {
+      return this.cars.map((item) => ({
+        id: item.id,
+        name: item.name,
+        color: item.colors.join(', '),
+        number: item.number,
+        minPrice: item.priceMin,
+        maxPrice: item.priceMax,
+        description: item.description,
+        image: item.thumbnail.path,
+        tank: item.tank,
+        category: item.categoryId?.name || 'Нет категории',
+      }));
+    },
+  },
+
+  created() {
+    this.CARS_PER_PAGE = CARS_PER_PAGE;
+    this.fetchCategories();
+    this.getCars();
+  },
+
+  methods: {
+    ...mapActions('cars', ['fetchCars']),
+    ...mapActions('categories', ['fetchCategories']),
+
+    async getCars(page = 1) {
+      this.currentPage = page;
+
+      try {
+        this.isLoading = true;
+
+        const params = {
+          page,
+        };
+
+        if (this.filter.selectedCategory) {
+          params.categoryId = this.filter.selectedCategory;
+        }
+
+        await this.fetchCars(params);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    resetFilters() {
+      this.filter = {
+        selectedCategory: null,
+      };
+      this.getCars(1);
+    },
+
+    onPageChange(page) {
+      this.getCars(page);
+    },
   },
 };
 </script>
@@ -191,28 +207,30 @@ export default {
 <style lang="scss">
 .cars {
   height: 100%;
+  overflow: auto;
+
   @include mobile {
-    margin-bottom: 15px;
+    overflow-x: hidden;
   }
 
-  &__block {
-    background-color: $white;
-    margin: 0 30px;
-    box-shadow: 0px 1px 0px rgba(90, 97, 105, 0.11), 0px 2px 4px rgba(90, 97, 105, 0.12),
-    0px 5px 5px rgba(90, 97, 105, 0.06), 0px 3.5px 35px rgba(90, 97, 105, 0.1);
-    border-radius: 9px;
-  }
   &__filters {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 15px 21px;
 
+    @include mobile {
+      flex-direction: column;
+      padding: 5px 5px;
+    }
+
     &-buttons {
       display: flex;
       flex-direction: row;
       @include mobile {
         flex-direction: column;
+        width: 110.5px;
+        margin-top: 15px;
       }
 
       &__reset {
@@ -223,6 +241,7 @@ export default {
 
         @include mobile {
           margin-right: 0;
+          margin-bottom: 5px;
         }
       }
       &__apply {
@@ -233,6 +252,10 @@ export default {
   &__list {
     width: 100%;
     padding: 15px 5px 15px 11px;
+
+    @include mobile {
+      padding: 0;
+    }
 
     .el-button-group {
       display: flex;
@@ -262,7 +285,12 @@ export default {
   }
 }
 
+.el-table .el-table__cell {
+  text-align: center;
+}
+
 hr {
   color: $very-light-gray;
 }
+
 </style>

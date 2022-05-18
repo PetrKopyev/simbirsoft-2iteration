@@ -10,7 +10,8 @@ import store from '@/store';
 import Categories from '@/components/Categories.vue';
 import Cities from '@/components/Cities.vue';
 import Points from '@/components/Points.vue';
-import Tariffs from '@/components/Tariffs.vue';
+import Rates from '@/components/Rates.vue';
+import RateTypes from '@/components/RateTypes.vue';
 
 Vue.use(VueRouter);
 
@@ -76,9 +77,14 @@ const routes = [
         component: Points,
       },
       {
-        path: 'tariffs',
-        name: 'Tariffs',
-        component: Tariffs,
+        path: 'rates',
+        name: 'Rates',
+        component: Rates,
+      },
+      {
+        path: 'rate-types',
+        name: 'RateTypes',
+        component: RateTypes,
       },
       {
         path: 'error500',
