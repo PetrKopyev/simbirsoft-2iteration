@@ -207,6 +207,7 @@ a {
 }
 
 .el-menu-item {
+  font-size: 14px;
   @include tablet {
     display: flex;
     flex-direction: row;

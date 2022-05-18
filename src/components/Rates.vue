@@ -215,6 +215,23 @@ export default {
 
   &__table {
     width: 100%;
+
+    @include mobile {
+      thead {
+        display: none;
+      }
+
+      tr {
+        display: flex;
+        flex-direction: column;
+
+        &:not(:last-child) {
+          td:last-child {
+            border-bottom: 1px solid $main-black;
+          }
+        }
+      }
+    }
   }
 }
 </style>

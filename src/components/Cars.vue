@@ -84,6 +84,7 @@
             label="Макс. цена"
           />
           <el-table-column
+            v-slot="scope"
             label="Действия"
             width="210"
           >
@@ -92,15 +93,23 @@
                 <el-button
                   class="change"
                   type="outline-primary"
+                  @click="goToCar(scope.row.id)"
                 >
                   <pre>Изменить</pre>
                 </el-button>
-                <el-button
-                  class="cancel"
-                  type="outline-primary"
+
+                <el-popconfirm
+                  title="Вы уверены, что хотите удалить?"
+                  @confirm="onDeleteCar(scope.row.id)"
                 >
-                  <pre>Удалить</pre>
-                </el-button>
+                  <el-button
+                    slot="reference"
+                    class="cancel"
+                    type="outline-primary"
+                  >
+                    <pre>Удалить</pre>
+                  </el-button>
+                </el-popconfirm>
               </el-button-group>
             </template>
           </el-table-column>
@@ -125,6 +134,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import { CARS_PER_PAGE } from '@/constants/cars.contants';
+import api from '@/api';
 
 export default {
   name: 'Cars',
@@ -199,6 +209,23 @@ export default {
 
     onPageChange(page) {
       this.getCars(page);
+    },
+
+    goToCar(id) {
+      this.$router.push({ name: 'Car', params: { id } });
+    },
+
+    async onDeleteCar(id) {
+      try {
+        this.isLoading = true;
+
+        await api.cars.deleteCar(id);
+        await this.getCars();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };

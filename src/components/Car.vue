@@ -3,41 +3,63 @@
     <h1 class="title">
       Карточка автомобиля
     </h1>
-    <div class="car__blocks">
+    <div
+      v-loading="isLoading"
+      class="car__blocks"
+    >
       <section class="car__block-info">
         <div class="car__block-info__load">
-          <img
-            class="car__block-info__load-img"
-            src="@/assets/image/car.png"
-            alt="car"
-          >
+          <picture class="car__block-info__load-img">
+            <img
+              v-if="car.thumbnail"
+              :src="car.thumbnail.path"
+              alt="car"
+            >
+          </picture>
           <h2 class="car__block-info__load-name">
-            Hyndai, i30 N
+            {{ car.name }}
           </h2>
-          <span class="car__block-info__load-descr">Компакт-кар</span>
+          <span
+            v-if="car.categoryId"
+            class="car__block-info__load-descr"
+          >
+            {{ selectedCategoryName }}
+          </span>
           <div class="car__block-info__load-upload file_upload">
             <div>Выберите файл...</div>
             <button>Обзор</button>
-            <input type="file">
+            <input
+              ref="loadfiles"
+              type="file"
+              accept=".jpg, .jpeg, .png"
+              @change="onLoadFile"
+            >
           </div>
         </div>
         <div class="car__block-info__filled">
           <div class="car__block-info__filled-about">
             <span>Заполнено</span>
-            <span style="color: #5A6169">74%</span>
+            <span style="color: #5A6169">{{ filledCount.formatted }}%</span>
           </div>
           <div class="car__block-info__filled-progress">
-            <span style="width: 74%" />
+            <span :style="`width: ${filledCount.result}%`" />
           </div>
         </div>
-        <hr>
         <div class="car__block-info__text">
           <h4>Описание</h4>
-          <textarea
+          <el-input
+            v-model="car.description"
             placeholder="Введите описание"
-            cols="30"
-            rows="5"
+            type="textarea"
+            :rows="5"
           />
+
+          <div
+            v-if="!$v.car.description.required"
+            class="invalid-feedback auth__error"
+          >
+            Поле обязательно для заполнения
+          </div>
         </div>
       </section>
       <div class="car__block-set">
@@ -45,61 +67,77 @@
         <form class="car__block-set__auto">
           <div class="car__block-set__auto-model">
             <label for="modelCar">Название</label>
-            <input
+            <el-input
               id="modelCar"
+              v-model="car.name"
               type="text"
               placeholder="Название автомобиля"
-            >
+            />
           </div>
           <div class="car__block-set__auto-model">
             <label for="typeCar">Категория</label>
-            <input
+            <el-select
               id="typeCar"
-              type="text"
+              v-model="car.categoryId"
               placeholder="Категория автомобиля"
+              style="width: 100%"
             >
+              <el-option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+                :label="category.name"
+              />
+            </el-select>
           </div>
           <div class="car__block-set__auto-model">
             <label for="typeCar">Номер</label>
-            <input
+            <el-input
               id="numberCar"
+              v-model="car.number"
               type="text"
               placeholder="Государственный рег. знак"
-            >
+            />
           </div>
           <div class="car__block-set__auto-model">
             <label for="typeCar">Топливо</label>
-            <input
+            <el-input
               id="tankCar"
+              v-model="car.tank"
               type="number"
+              min="0"
               placeholder="Вместимость бака"
-            >
+            />
           </div>
           <div class="car__block-set__auto-model">
             <label for="typeCar">Минимальная цена</label>
-            <input
+            <el-input
               id="minPriceCar"
+              v-model="car.priceMin"
               type="number"
+              min="0"
               placeholder="Цена от"
-            >
+            />
           </div>
           <div class="car__block-set__auto-model">
             <label for="typeCar">Максимальная цена</label>
-            <input
+            <el-input
               id="maxPriceCar"
+              v-model="car.priceMax"
               type="number"
+              min="0"
               placeholder="Цена до"
-            >
+            />
           </div>
           <div class="car__block-set__auto-model">
             <label for="colorsForPick">Доступные цвета</label>
             <div class="car__block-set__auto-model__input">
-              <input
+              <el-input
                 id="colorsForPick"
                 v-model="newColor"
                 type="text"
                 placeholder="Название цвета"
-              >
+              />
               <button @click.prevent="addColor">
                 +
               </button>
@@ -112,21 +150,34 @@
               v-for="(color, index) in colors"
               :key="index"
             >
-              <input type="checkbox">
-              <span>{{ color }}</span>
+              <input
+                v-model="color.checked"
+                type="checkbox"
+                :checked="color.checked"
+              >
+              <span>{{ color.name }}</span>
             </li>
           </ul>
         </div>
         <div class="car__block-set__buttons">
           <div class="car__block-set__buttons-choise">
-            <button class="car__block-set__buttons-choise-save auth__links-btn">
+            <button
+              class="car__block-set__buttons-choise-save auth__links-btn"
+              @click="onSave"
+            >
               Сохранить
             </button>
-            <button class="car__block-set__buttons-choise-cancel auth__links-btn">
+            <button
+              class="car__block-set__buttons-choise-cancel auth__links-btn"
+              @click="onCancel"
+            >
               Отменить
             </button>
           </div>
-          <button class="car__block-set__buttons-delete auth__links-btn">
+          <button
+            class="car__block-set__buttons-delete auth__links-btn"
+            @click="onDelete"
+          >
             Удалить
           </button>
         </div>
@@ -136,20 +187,213 @@
 </template>
 
 <script>
+import { maxLength, minLength, required } from 'vuelidate/lib/validators';
+import { mapActions, mapState } from 'vuex';
+import toBase64 from '@/util/toBase64';
+import api from '@/api';
+
 export default {
   name: 'Car',
+
   data() {
     return {
+      isLoading: false,
       newColor: '',
       colors: [],
-
+      car: {
+        categoryId: '',
+        description: '',
+        name: '',
+        number: '',
+        priceMax: '',
+        priceMin: '',
+        tank: '',
+        thumbnail: '',
+      },
     };
   },
+
+  validations: {
+    car: {
+      categoryId: {
+        required,
+      },
+      description: {
+        required,
+        minLength: minLength(5),
+        maxLength: maxLength(1000),
+      },
+      name: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(100),
+      },
+      number: {
+        required,
+        minLength: minLength(8),
+        maxLength: maxLength(8),
+      },
+      priceMax: {
+        required,
+      },
+      priceMin: {
+        required,
+      },
+      tank: {
+        required,
+      },
+      thumbnail: {
+        required,
+      },
+    },
+    colors: {
+      required,
+    },
+  },
+
+  computed: {
+    ...mapState('categories', ['categories']),
+
+    carId() {
+      return this.$route.params.id;
+    },
+
+    isEditMode() {
+      return !!this.carId;
+    },
+
+    selectedCategoryName() {
+      return this.categories.find((item) => item.id === this.car.categoryId)?.name;
+    },
+
+    filledCount() {
+      const fieldsCount = Object.keys(this.car).length + 1; // +1 - this.colors
+      const percentPerField = 100 / fieldsCount;
+      let result = 0;
+
+      Object.values(this.car).forEach((value) => {
+        if (value) result += percentPerField;
+      });
+
+      if (this.colors.some((color) => color.checked)) {
+        result += percentPerField;
+      }
+
+      return {
+        result,
+        formatted: Math.round(result),
+      };
+    },
+  },
+
+  created() {
+    this.init();
+  },
+
   methods: {
+    ...mapActions('cars', ['fetchCar']),
+    ...mapActions('categories', ['fetchCategories']),
+
+    async init() {
+      await this.fetchCategories();
+
+      if (this.isEditMode) {
+        const car = await this.fetchCar(this.carId);
+
+        this.colors = car.colors.map((item) => ({
+          name: item,
+          checked: true,
+        }));
+
+        this.car = ({
+          categoryId: car.categoryId.id,
+          description: car.description,
+          name: car.name,
+          number: car.number,
+          priceMax: car.priceMax,
+          priceMin: car.priceMin,
+          tank: car.tank,
+          thumbnail: car.thumbnail,
+        });
+      }
+    },
+
     addColor() {
       if (this.newColor) {
-        this.colors.push(this.newColor);
+        this.colors.push({
+          name: this.newColor,
+          checked: true,
+        });
+
         this.newColor = '';
+      }
+    },
+
+    async onLoadFile() {
+      const file = this.$refs.loadfiles.files[0];
+
+      this.car.thumbnail = {
+        mimetype: file.type,
+        originalname: file.name,
+        size: file.size,
+        path: await toBase64(file),
+      };
+    },
+
+    onCancel() {
+      this.$router.push({ name: 'Cars' });
+    },
+
+    async onSave() {
+      this.$v.$touch();
+
+      console.log(this.$v);
+
+      if (this.$v.$invalid) return;
+
+      const car = {
+        ...this.car,
+        colors: this.colors.filter((item) => item.checked).map((item) => item.name),
+      };
+
+      if (this.isEditMode) {
+        try {
+          this.isLoading = true;
+
+          await api.cars.updateCar(this.carId, car);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          this.isLoading = false;
+        }
+      } else {
+        try {
+          this.isLoading = true;
+
+          await api.cars.createCar(car);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          this.isLoading = false;
+        }
+      }
+    },
+
+    async onDelete() {
+      if (this.isEditMode) {
+        try {
+          this.isLoading = true;
+
+          await api.cars.deleteCar(this.carId);
+
+          this.onCancel();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          this.isLoading = false;
+        }
+      } else {
+        this.onCancel();
       }
     },
   },
@@ -210,9 +454,14 @@ export default {
 
         &-img {
           width: 243px;
-          height: 110px;
+          min-height: 110px;
           margin-top: 34px;
           margin-bottom: 10px;
+          background: $grey;
+
+          img {
+            object-fit: contain;
+          }
         }
         &-name {
           font-weight: 400;
