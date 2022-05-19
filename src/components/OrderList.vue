@@ -3,200 +3,528 @@
     <h1 class="title">
       Заказы
     </h1>
-    <div class="block">
+    <div
+      v-loading="isLoading"
+      class="block"
+    >
       <div class="order-list__header">
-        <div>
+        <div class="order-list__header-fillters">
+          <el-input
+            v-model="filter.color"
+            placeholder="Цвет"
+            style="width: 50%"
+          />
+
           <el-select
-            v-model="timeValue"
-            placeholder="За неделю"
+            v-model="filter.options"
+            multiple
+            style="width: 50%"
           >
             <el-option
-              v-for="(time, index) in times"
-              :key="time.value"
-              :value="index"
-              :label="time.label"
+              value="isFullTank"
+              label="Полный бак"
             />
-          </el-select>
-          <el-select
-            v-model="modelValue"
-            placeholder="Elantra"
-          >
             <el-option
-              v-for="(model, index) in models"
-              :key="model.value"
-              :value="index"
-              :label="model.label"
+              value="isNeedChildChair"
+              label="Детское кресло"
             />
-          </el-select>
-          <el-select
-            v-model="cityValue"
-            placeholder="Ульяновск"
-          >
             <el-option
-              v-for="(city, index) in cities"
-              :key="city.value"
-              :value="index"
-              :label="city.label"
-            />
-          </el-select>
-          <el-select
-            v-model="statusValue"
-            placeholder="В процессе"
-          >
-            <el-option
-              v-for="(status, index) in statuses"
-              :key="status.value"
-              :value="index"
-              :label="status.label"
+              value="isRightWheel"
+              label="Правый руль"
             />
           </el-select>
         </div>
-        <button class="order-list__header-btn">
-          Применить
-        </button>
+        <div class="order-list__header-buttons">
+          <button
+            class="order-list__header-btn"
+            @click="onFilterClear"
+          >
+            Сбросить
+          </button>
+          <button
+            class="order-list__header-btn"
+            @click="onFilter"
+          >
+            Применить
+          </button>
+        </div>
       </div>
       <hr>
-      <div class="order-list__order">
-        <div class="order-list__order-info">
-          <div class="order-list__order-image">
-            <img
-              src="@/assets/image/car.png"
-              alt="car"
+      <div class="order-list__wrapper">
+        <div
+          v-for="orderItem in mappedOrders"
+          :key="orderItem.id"
+          class="order-list__order"
+        >
+          <div class="order-list__order-info">
+            <picture
+              :class="[
+                'order-list__order-image',
+                { 'order-list__order-image--no-image': !orderItem.car.image }
+              ]"
             >
-          </div>
-          <div class="order-list__order-info__text">
-            <p><span>ELANTRA</span> в <span>Ульяновск</span>, Нариманова 42</p>
-            <p>12.06.2019 12:00 — 13.06.2019 12:00</p>
-            <p>Цвет: <span>Голубой</span></p>
-          </div>
-        </div>
-        <div class="order-list__order-options">
-          <div
-            class="order-list__order-options__item"
-          >
-            <input
-              id="c1"
-              type="checkbox"
-              value="fullTank"
-              name="cc"
-            >
-            <label for="c1">
               <img
-                class="order-list__order-options__item-checkbox"
-                src="@/assets/image/checkbox.png"
+                v-if="orderItem.car.image"
+                :src="orderItem.car.image"
+                :alt="orderItem.car.alt"
               >
-              <span />
-              Полный бак
-            </label>
+            </picture>
+            <div class="order-list__order-info__text">
+              <p v-if="orderItem.car.name || orderItem.city || orderItem.address">
+                <span v-if="orderItem.car.name">{{ orderItem.car.name }}</span>
+                <template v-if="orderItem.city">
+                  в <span>{{ orderItem.city }}</span>
+                </template>
+                {{ orderItem.address ? `, ${orderItem.address}` : '' }}
+              </p>
+              <p>
+                {{ orderItem.dates }}
+              </p>
+              <p v-if="orderItem.color">
+                Цвет: <span>{{ orderItem.color }}</span>
+              </p>
+            </div>
           </div>
-          <div class="order-list__order-options__item">
-            <input
-              id="c2"
-              type="checkbox"
-              value="child"
-              name="cc"
+          <div class="order-list__order-options">
+            <div
+              class="order-list__order-options__item"
             >
-            <label for="c2">
-              <img
-                class="order-list__order-options__item-checkbox"
-                src="@/assets/image/checkbox.png"
+              <input
+                id="c1"
+                type="checkbox"
+                value="fullTank"
+                name="cc"
+                disabled
+                :checked="orderItem.isFullTank"
               >
-              <span />
-              Детское кресло
-            </label>
+              <label for="c1">
+                <img
+                  class="order-list__order-options__item-checkbox"
+                  src="@/assets/image/checkbox.png"
+                >
+                <span />
+                Полный бак
+              </label>
+            </div>
+            <div class="order-list__order-options__item">
+              <input
+                id="c2"
+                type="checkbox"
+                value="child"
+                name="cc"
+                disabled
+                :checked="orderItem.isNeedChildChair"
+              >
+              <label for="c2">
+                <img
+                  class="order-list__order-options__item-checkbox"
+                  src="@/assets/image/checkbox.png"
+                >
+                <span />
+                Детское кресло
+              </label>
+            </div>
+            <div class="order-list__order-options__item">
+              <input
+                id="c3"
+                type="checkbox"
+                value="right"
+                name="cc"
+                disabled
+                :checked="orderItem.isRightWheel"
+              >
+              <label for="c3">
+                <img
+                  class="order-list__order-options__item-checkbox"
+                  src="@/assets/image/checkbox.png"
+                >
+                <span />
+                Правый руль
+              </label>
+            </div>
           </div>
-          <div class="order-list__order-options__item">
-            <input
-              id="c3"
-              type="checkbox"
-              value="right"
-              name="cc"
+          <div class="order-list__order-price">
+            <span>{{ orderItem.price }} ₽</span>
+          </div>
+          <el-button-group class="order-list__order-buttons buttons">
+            <el-button
+              class="change"
+              type="outline-primary"
+              @click="onOpenDialog(orderItem)"
             >
-            <label for="c3">
-              <img
-                class="order-list__order-options__item-checkbox"
-                src="@/assets/image/checkbox.png"
+              <pre>Изменить</pre>
+            </el-button>
+
+            <el-popconfirm
+              title="Вы уверены, что хотите удалить?"
+              @confirm="onOrderDelete(orderItem.id)"
+            >
+              <el-button
+                slot="reference"
+                class="cancel"
+                type="outline-primary"
               >
-              <span />
-              Правый руль
-            </label>
-          </div>
+                <pre>Удалить</pre>
+              </el-button>
+            </el-popconfirm>
+          </el-button-group>
         </div>
-        <div class="order-list__order-price">
-          <span>4 300 ₽</span>
-        </div>
-        <el-button-group class="order-list__order-buttons">
-          <el-button
-            class="done"
-            type="outline-primary"
-          >
-            Готово
-          </el-button>
-          <el-button
-            class="cancel"
-            type="outline-primary"
-          >
-            Отмена
-          </el-button>
-          <el-button
-            class="change"
-            type="outline-primary"
-          >
-            Изменить
-          </el-button>
-        </el-button-group>
       </div>
       <hr>
       <div class="order-list__pagination">
         <el-pagination
           background
           layout="prev, pager, next"
-          :total="310"
-          :pager-size="4"
+          :current-page.sync="currentPage"
+          :total="total"
+          :page-size="ORDERS_PER_PAGE"
+          @current-change="onPageChange"
         />
       </div>
     </div>
+    <el-dialog
+      :show-close="false"
+      :title="'Редактирование заказа'"
+      :visible.sync="dialogFormVisible"
+      width="60%"
+      @close="onDialogClose"
+    >
+      <el-form class="order-list__form">
+        <el-form-item
+          label="Автомобиль"
+          :label-width="formLabelWidth"
+        >
+          <el-select
+            v-model="order.car"
+            placeholder="Выберите автомобиль"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="car in cars"
+              :key="car.id"
+              :value="car.id"
+              :label="car.name"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="Цвет"
+          :label-width="formLabelWidth"
+        >
+          <el-select
+            v-model="order.color"
+            placeholder="Выберите цвет"
+            style="width: 100%"
+            :disabled="!selectedCar.colors"
+          >
+            <el-option
+              v-for="color in selectedCar.colors"
+              :key="color"
+              :value="color"
+              :label="color"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select
+            v-model="order.city"
+            placeholder="Выберите город"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="city in cities"
+              :key="city.id"
+              :value="city.id"
+              :label="city.name"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select
+            v-model="order.address"
+            placeholder="Выберите пункт выдачи"
+            style="width: 100%"
+            :disabled="!allowedPoints.length"
+          >
+            <el-option
+              v-for="point in allowedPoints"
+              :key="point.id"
+              :value="point.id"
+              :label="`${point.name} (${point.address})`"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-date-picker
+          v-model="order.dates"
+          type="datetimerange"
+          value-format="timestamp"
+          format="dd.MM.yyyy HH:mm"
+          :picker-options="{firstDayOfWeek: 1}"
+          class="order-list__datepicker"
+        />
+        <div style="margin-bottom: 15px">
+          <el-checkbox v-model="order.isFullTank">
+            Полный бак
+          </el-checkbox>
+          <el-checkbox v-model="order.isNeedChildChair">
+            Детское кресло
+          </el-checkbox>
+          <el-checkbox v-model="order.isRightWheel">
+            Правый руль
+          </el-checkbox>
+        </div>
+
+        <el-form-item>
+          <el-input
+            v-model.number="order.price"
+            :min="0"
+            type="number"
+            placeholder="Введите цену"
+          />
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          class="auth__links-btn"
+          type="primary"
+          @click="onSaveOrder"
+        >
+          Сохранить
+        </el-button>
+
+        <el-button
+          class="auth__links-btn"
+          type="plain"
+          @click="dialogFormVisible = false"
+        >
+          Отменить
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import dayjs from 'dayjs';
+import { mapActions, mapState } from 'vuex';
+import { ORDERS_PER_PAGE } from '@/constants/order.constants';
+import api from '@/api';
+
 export default {
   name: 'OrderList',
+
   data() {
     return {
-      times: [{
-        label: 'За неделю',
-      }, {
-        label: 'За месяц',
-      }, {
-        label: 'За год',
-      }],
-      models: [{
-        label: 'Elantra',
-      }, {
-        label: 'Sonata',
-      }, {
-        label: 'Cerato',
-      }],
-      cities: [{
-        label: 'Ульяновск',
-      }, {
-        label: 'Самара',
-      }, {
-        label: 'Казань',
-      }],
-      statuses: [{
-        label: 'В процессе',
-      }, {
-        label: 'Готово',
-      }, {
-        label: 'Отменено',
-      }],
-      timeValue: '',
-      modelValue: '',
-      cityValue: '',
-      statusValue: '',
+      isLoading: false,
+      formLabelWidth: '100px',
+      dialogFormVisible: false,
+      currentPage: 1,
+      order: {
+        car: '',
+        city: '',
+        address: '',
+        color: '',
+        dates: [],
+        isFullTank: false,
+        isNeedChildChair: false,
+        isRightWheel: false,
+        price: null,
+      },
+
+      filter: {
+        color: '',
+        options: [],
+      },
     };
+  },
+
+  computed: {
+    ...mapState('orders', ['orders', 'total']),
+    ...mapState('cars', ['cars']),
+    ...mapState('cities', ['cities']),
+    ...mapState('points', ['points']),
+
+    mappedOrders() {
+      return this.orders.map((item) => ({
+        id: item.id,
+        car: item.carId
+          ? {
+            id: item.carId.id,
+            name: item.carId.name,
+            image: item.carId.thumbnail?.path,
+          }
+          : {},
+        color: item.color,
+        city: item.cityId?.name,
+        cityId: item.cityId?.id,
+        address: item.pointId?.address,
+        pointId: item.pointId?.id,
+        dateFrom: item.dateFrom,
+        dateTo: item.dateTo,
+        dates: `${dayjs(item.dateFrom).format('DD.MM.YYYY HH:mm')} — ${dayjs(item.dateTo).format('DD.MM.YYYY HH:mm')}`,
+        isFullTank: item.isFullTank,
+        isNeedChildChair: item.isNeedChildChair,
+        isRightWheel: item.isRightWheel,
+        price: item.price,
+      }));
+    },
+
+    selectedCar() {
+      return this.cars.find((item) => item.id === this.order.car) || {};
+    },
+
+    selectedCity() {
+      return this.cities.find((item) => item.id === this.order.city) || {};
+    },
+
+    allowedPoints() {
+      return this.points.filter((item) => item.cityId.id === this.selectedCity.id);
+    },
+  },
+
+  watch: {
+    // eslint-disable-next-line func-names
+    'order.city': function (newValue, oldValue) {
+      if (oldValue) {
+        this.order.address = '';
+      }
+    },
+    // eslint-disable-next-line func-names
+    'order.car': function (newValue, oldValue) {
+      if (oldValue || oldValue === undefined) {
+        this.order.color = '';
+      }
+    },
+  },
+
+  created() {
+    this.ORDERS_PER_PAGE = ORDERS_PER_PAGE;
+    this.init();
+  },
+
+  methods: {
+    ...mapActions('orders', ['fetchOrders']),
+    ...mapActions('cars', ['fetchCars']),
+    ...mapActions('cities', ['fetchCities']),
+    ...mapActions('points', ['fetchPoints']),
+
+    init() {
+      this.isLoading = true;
+      Promise.all([
+        this.fetchCars({ limit: null }),
+        this.fetchCities(),
+        this.fetchPoints(),
+      ]).then(() => {
+        this.fetchOrders();
+      }).catch((e) => {
+        console.error(e);
+      }).finally(() => {
+        this.isLoading = false;
+      });
+    },
+
+    onPageChange(page) {
+      this.fetchOrders({ page: page - 1 });
+    },
+
+    onFilterClear() {
+      this.filter = {
+        color: '',
+        options: [],
+      };
+      this.fetchOrders();
+    },
+
+    onFilter() {
+      const filterData = {
+        color: this.filter.color || null,
+        isFullTank: this.filter.options.includes('isFullTank') || null,
+        isNeedChildChair: this.filter.options.includes('isNeedChildChair') || null,
+        isRightWheel: this.filter.options.includes('isRightWheel') || null,
+      };
+
+      this.fetchOrders({ page: 0, ...filterData });
+    },
+
+    async onSaveOrder() {
+      const orderData = {
+        cityId: this.order.city
+          ? this.cities.find((item) => item.id === this.order.city)
+          : null,
+        carId: this.order.car
+          ? this.cars.find((item) => item.id === this.order.car)
+          : null,
+        pointId: this.order.address
+          ? this.points.find((item) => item.id === this.order.address)
+          : null,
+        dateFrom: this.order.dates[0],
+        dateTo: this.order.dates[1],
+        isFullTank: this.order.isFullTank,
+        isNeedChildChair: this.order.isNeedChildChair,
+        isRightWheel: this.order.isRightWheel,
+        price: this.order.price,
+        color: this.order.color,
+      };
+      const orderId = this.order.id;
+
+      try {
+        this.isLoading = true;
+        await api.orders.updateOrder(orderId, orderData);
+        await this.fetchOrders({ page: this.currentPage - 1 });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.isLoading = false;
+        this.dialogFormVisible = false;
+      }
+
+      console.log(orderData);
+    },
+
+    async onOrderDelete(id) {
+      try {
+        await api.orders.deleteOrder(id);
+        await this.fetchOrders();
+        this.currentPage = 1;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+
+    onOpenDialog(order) {
+      this.dialogFormVisible = true;
+
+      this.order = {
+        id: order.id,
+        car: order.car?.id,
+        city: order.cityId,
+        address: order.pointId,
+        color: order.color,
+        dates: [order.dateFrom, order.dateTo],
+        isFullTank: order.isFullTank,
+        isNeedChildChair: order.isNeedChildChair,
+        isRightWheel: order.isRightWheel,
+        price: order.price,
+      };
+    },
+
+    onDialogClose() {
+      this.order = {
+        car: '',
+        city: '',
+        address: '',
+        color: '',
+        dates: [],
+        isFullTank: false,
+        isNeedChildChair: false,
+        isRightWheel: false,
+        price: null,
+      };
+    },
   },
 };
 </script>
@@ -224,6 +552,19 @@ export default {
     margin-bottom: 15px;
   }
 
+  &__form {
+    @include mobile {
+      display: flex;
+      flex-direction: column;
+    }
+
+  }
+
+  &__datepicker {
+    margin-bottom: 20px;
+    max-width: 380px !important;
+  }
+
   &__block {
     margin-left: 32px;
     margin-right: 25px;
@@ -238,6 +579,23 @@ export default {
     justify-content: space-between;
     margin-bottom: 14px;
     padding: 0 21.5px;
+    @include mobile {
+      flex-direction: column;
+    }
+
+    &-fillters {
+      display: flex;
+      flex-direction: row;
+      @include mobile {
+        margin-bottom: 15px;
+      }
+    }
+
+    &-buttons {
+      display: flex;
+      flex-direction: row;
+
+    }
 
     &-btn {
       background: $pure-blue;
@@ -258,6 +616,14 @@ export default {
       height: 29px;
       width: 95px;
 
+      @include mobile {
+        width: 65px;
+      }
+
+      &:last-child {
+        margin-left: 10px;
+      }
+
       &:hover {
         color: $dark-grey;
       }
@@ -271,22 +637,14 @@ export default {
     align-items: center;
     padding: 0 21.5px;
     margin-top: 15px;
-    margin-bottom: 75px;
+    margin-bottom: 25px;
 
-    @include mobile {
-      //flex-direction: column;
-      flex-wrap: wrap;
+    &:not(:last-child) {
+      border-bottom: 1px solid $grey;
     }
 
-    &-image img {
-      width: 138px;
-      height: 63px;
-
-      @include mobile {
-        width: 198px;
-        height: 84px;
-
-      }
+    @include mobile {
+      flex-wrap: wrap;
     }
 
     &-info {
@@ -325,6 +683,24 @@ export default {
 
       & span {
         color: $main-black;
+      }
+    }
+
+    &-image {
+      width: 138px;
+      min-height: 110px;
+
+      @include mobile {
+        width: 198px;
+        height: 84px;
+      }
+
+      img {
+        object-fit: contain;
+      }
+
+      &--no-image {
+        background: $grey;
       }
     }
 
@@ -435,21 +811,8 @@ export default {
               color: $strong-red;
               font-size: 11px;
               margin-right: 5px;
-            }
-          }
-        }
-        &.done {
-          span {
-            &:before {
-              content: '';
-              display: block;
-              margin-right: 7px;
-              margin-bottom: 3px;
-              width: 4px;
-              height: 9px;
-              border: solid $main-green;
-              border-width: 0 1px 1px 0;
-              transform: rotate(45deg);
+
+              @include tablet {}
             }
           }
         }
@@ -538,6 +901,10 @@ export default {
 
 hr {
   color: $very-light-gray;
+}
+
+.el-icon-time:before {
+  display: none;
 }
 
 </style>

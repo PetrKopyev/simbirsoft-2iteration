@@ -347,8 +347,6 @@ export default {
     async onSave() {
       this.$v.$touch();
 
-      console.log(this.$v);
-
       if (this.$v.$invalid) return;
 
       const car = {

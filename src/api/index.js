@@ -5,6 +5,7 @@ import points from '@/api/modules/points.api';
 import cities from '@/api/modules/cities.api';
 import rates from '@/api/modules/rates.api';
 import rateTypes from '@/api/modules/rateTypes.api';
+import orders from '@/api/modules/orders.api';
 
 export default {
   auth,
@@ -14,4 +15,5 @@ export default {
   cities,
   rates,
   rateTypes,
+  orders,
 };

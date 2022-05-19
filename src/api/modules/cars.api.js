@@ -3,7 +3,7 @@ import { CARS_PER_PAGE } from '@/constants/cars.contants';
 
 const getCar = (id) => httpClient.get(`/db/car/${id}`);
 
-const getCars = ({ page, limit = CARS_PER_PAGE, categoryId = null }) => httpClient.get('/db/car', { params: { page, limit, categoryId } });
+const getCars = ({ page = 0, limit = CARS_PER_PAGE, categoryId = null } = {}) => httpClient.get('/db/car', { params: { page, limit, categoryId } });
 
 const createCar = (car) => httpClient.post('/db/car', { ...car });
 

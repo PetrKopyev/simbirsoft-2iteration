@@ -1,4 +1,5 @@
 import api from '@/api';
+import { CARS_PER_PAGE } from '@/constants/cars.contants';
 
 export default {
   namespaced: true,
@@ -31,9 +32,9 @@ export default {
       }
     },
 
-    async fetchCars({ commit }, { page = 1, categoryId = null }) {
+    async fetchCars({ commit }, { page = 1, categoryId = null, limit = CARS_PER_PAGE } = {}) {
       try {
-        const { data } = await api.cars.getCars({ page: page - 1, categoryId });
+        const { data } = await api.cars.getCars({ page: page - 1, categoryId, limit });
 
         commit('SET_CARS', data.data);
         commit('SET_TOTAL', data.count);

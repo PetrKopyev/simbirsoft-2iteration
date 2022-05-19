@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import orders from './modules/orders';
 import auth from './modules/auth';
 import categories from './modules/categories';
 import cars from './modules/cars';
@@ -25,5 +26,6 @@ export default new Vuex.Store({
     cities,
     rates,
     rateTypes,
+    orders,
   },
 });
