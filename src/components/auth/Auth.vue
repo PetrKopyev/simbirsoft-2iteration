@@ -18,7 +18,7 @@
           </div>
           <b-form
             novalidate
-            @submit="onSubmit"
+            @submit.prevent="onSubmit"
           >
             <b-form-group
               id="input-group-1"
@@ -31,19 +31,12 @@
                 type="email"
                 placeholder="admin@ss.com"
                 :class="{'is-invalid': $v.form.email.$error}"
-                @blur="$v.form.email.$touch()"
               />
               <div
                 v-if="!$v.form.email.required"
                 class="invalid-feedback auth__error"
               >
                 Поле обязательно для заполнения
-              </div>
-              <div
-                v-if="!$v.form.email.email"
-                class="invalid-feedback auth__error"
-              >
-                Поле должно быть email адресом
               </div>
             </b-form-group>
 
@@ -58,7 +51,6 @@
                 type="password"
                 placeholder="••••••••••••"
                 :class="{'is-invalid': $v.form.password.$error}"
-                @blur="$v.form.password.$touch()"
               />
               <div
                 v-if="!$v.form.password.required"
@@ -82,12 +74,9 @@
                 Запросить доступ
               </a>
 
-              <router-link
-                to="/admin-panel/error500"
-                class="auth__links-btn"
-              >
+              <button class="auth__links-btn">
                 Войти
-              </router-link>
+              </button>
             </div>
           </b-form>
         </div>
@@ -97,29 +86,36 @@
 </template>
 
 <script>
-import { required, email, minLength } from 'vuelidate/lib/validators';
+import { required, minLength } from 'vuelidate/lib/validators';
+import { mapActions } from 'vuex';
 
 export default {
   data() {
     return {
       form: {
-        email: '',
-        password: '',
+        email: 'intern',
+        password: 'intern-S!',
       },
     };
   },
   computed: {
   },
   methods: {
-    onSubmit(event) {
-      event.preventDefault();
+    ...mapActions('auth', ['auth']),
+
+    onSubmit() {
+      this.$v.form.$touch();
+
+      if (this.$v.form.$invalid) return;
+
+      this.auth({ username: this.form.email, password: this.form.password });
     },
   },
   validations: {
     form: {
       email: {
         required,
-        email,
+        // email,
       },
       password: {
         required,
@@ -257,5 +253,9 @@ export default {
 
 .auth__error {
   font-size: 10px !important;
+}
+
+.row {
+  margin-right: 0 !important;
 }
 </style>
