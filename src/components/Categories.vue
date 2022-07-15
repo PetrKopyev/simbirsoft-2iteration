@@ -65,7 +65,7 @@
 
     <el-dialog
       :show-close="false"
-      :title="isEditMode ? 'Редактирование категории' : 'Новая категория'"
+      :title="titleCategory"
       :visible.sync="dialogFormVisible"
     >
       <el-form>
@@ -136,6 +136,10 @@ export default {
   computed: {
     ...mapState('categories', ['categories']),
 
+    titleCategory() {
+      return this.isEditMode ? 'Редактирование категории' : 'Новая категория';
+    },
+
     isEditMode() {
       return !!this.categoryNew.id;
     },
@@ -146,7 +150,11 @@ export default {
   },
 
   methods: {
-    ...mapActions('categories', ['fetchCategories', 'createCategory', 'deleteCategory', 'updateCategory']),
+    ...mapActions('categories',
+      ['fetchCategories',
+        'createCategory',
+        'deleteCategory',
+        'updateCategory']),
 
     async onConfirm() {
       this.isFormLoading = true;
@@ -171,8 +179,11 @@ export default {
 
     async onDeleteCategory(id) {
       this.isFormLoading = true;
-
-      await this.deleteCategory({ id });
+      try {
+        await this.deleteCategory({ id });
+      } catch (e) {
+        alert(`Ошибка: ${e}`);
+      }
 
       this.isFormLoading = false;
     },

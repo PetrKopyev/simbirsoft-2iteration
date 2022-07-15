@@ -77,8 +77,6 @@ export default {
 
         return Promise.resolve();
       } catch (e) {
-        console.error(e);
-
         return Promise.reject();
       }
     },

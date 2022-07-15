@@ -123,7 +123,7 @@
           layout="prev, pager, next"
           :current-page.sync="currentPage"
           :total="total"
-          :page-size="CARS_PER_PAGE"
+          :page-size="carsPerPage"
           @current-change="onPageChange"
         />
       </div>
@@ -143,6 +143,8 @@ export default {
       isLoading: false,
 
       currentPage: 1,
+
+      carsPerPage: CARS_PER_PAGE,
 
       filter: {
         selectedCategory: null,
@@ -171,7 +173,6 @@ export default {
   },
 
   created() {
-    this.CARS_PER_PAGE = CARS_PER_PAGE;
     this.fetchCategories();
     this.getCars();
   },
@@ -194,7 +195,7 @@ export default {
           params.categoryId = this.filter.selectedCategory;
         }
 
-        await this.fetchCars(params);
+        await this.fetchCars({ page });
       } finally {
         this.isLoading = false;
       }
@@ -216,13 +217,13 @@ export default {
     },
 
     async onDeleteCar(id) {
-      try {
-        this.isLoading = true;
+      this.isLoading = true;
 
+      try {
         await api.cars.deleteCar(id);
         await this.getCars();
       } catch (e) {
-        console.error(e);
+        alert(`Ошибка: ${e}`);
       } finally {
         this.isLoading = false;
       }
