@@ -4,7 +4,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'https://api-factory.simbirsoft1.com',
+        target: '',
       },
     },
   },
