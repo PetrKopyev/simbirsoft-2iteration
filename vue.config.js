@@ -8,9 +8,6 @@ module.exports = {
       },
     },
   },
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/simbirsoft-2iteration/'
-    : '/',
   chainWebpack: (config) => {
     config.resolve.alias
       .set('@', path.resolve(__dirname, 'src'));
@@ -21,7 +18,6 @@ module.exports = {
         prependData: `
           @import "@/styles/_variables.scss";
           @import "@/styles/_mixins.scss";
-
         `,
       },
     },

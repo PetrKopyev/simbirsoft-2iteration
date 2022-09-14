@@ -12,7 +12,7 @@
       router
       class="el-menu-vertical-demo"
     >
-      <el-menu-item index="/admin-panel/car">
+      <el-menu-item index="/car">
         <i>
           <app-svg icon-name="write">
             <icon-car />
@@ -20,7 +20,7 @@
         </i>
         <span>Карточка автомобиля</span>
       </el-menu-item>
-      <el-menu-item index="/admin-panel/cars">
+      <el-menu-item index="/cars">
         <i>
           <app-svg icon-name="write">
             <icon-cars />
@@ -28,7 +28,7 @@
         </i>
         <span>Список авто</span>
       </el-menu-item>
-      <el-menu-item index="/admin-panel/orderlist">
+      <el-menu-item index="/order-list">
         <i>
           <app-svg icon-name="write">
             <icon-order />
@@ -36,6 +36,31 @@
         </i>
 
         <span>Заказы</span>
+      </el-menu-item>
+      <el-menu-item index="/categories">
+        <i class="el-icon-menu" />
+
+        <span>Категории</span>
+      </el-menu-item>
+      <el-menu-item index="/cities">
+        <i class="el-icon-office-building" />
+
+        <span>Города</span>
+      </el-menu-item>
+      <el-menu-item index="/points">
+        <i class="el-icon-position" />
+
+        <span>Пункты выдачи</span>
+      </el-menu-item>
+      <el-menu-item index="/rates">
+        <i class="el-icon-files" />
+
+        <span>Тарифы</span>
+      </el-menu-item>
+      <el-menu-item index="/rate-types">
+        <i class="el-icon-document-copy" />
+
+        <span>Типы тарифов</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -81,6 +106,7 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: row;
+    overflow: auto;
   }
 
   &__logo {
@@ -93,6 +119,7 @@ export default {
 
     @include mobile {
       width: 10%;
+      height: 0;
     }
 
     &-img {
@@ -180,6 +207,7 @@ a {
 }
 
 .el-menu-item {
+  font-size: 14px;
   @include tablet {
     display: flex;
     flex-direction: row;
@@ -191,6 +219,11 @@ a {
     display: flex;
     justify-content: center;
   }
+}
+
+.el-menu-item [class^=el-icon-] {
+  width: 15px;
+  font-size: 15px;
 }
 
 </style>
