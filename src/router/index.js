@@ -6,34 +6,89 @@ import OrderList from '@/components/OrderList.vue';
 import Cars from '@/components/Cars.vue';
 import Car from '@/components/Car.vue';
 import Error500 from '@/components/Error500.vue';
+import store from '@/store';
+import Categories from '@/components/Categories.vue';
+import Cities from '@/components/Cities.vue';
+import Points from '@/components/Points.vue';
+import Rates from '@/components/Rates.vue';
+import RateTypes from '@/components/RateTypes.vue';
 
 Vue.use(VueRouter);
 
+const ifNotAuth = (to, from, next) => {
+  if (!store.getters['auth/isAuth']) {
+    next();
+    return;
+  }
+  next('/');
+};
+
+const ifAuth = (to, from, next) => {
+  if (store.getters['auth/isAuth']) {
+    next();
+    return;
+  }
+  next('/auth');
+};
+
 const routes = [
   {
-    path: '/',
+    path: '/auth',
     name: 'Auth',
     component: Auth,
+    beforeEnter: ifNotAuth,
   },
+
   {
-    path: '/admin-panel',
+    path: '/',
     name: 'AdminPanel',
+    redirect: 'order-list',
     component: AdminPanel,
+    beforeEnter: ifAuth,
     children: [
       {
-        path: 'OrderList',
+        path: 'order-list',
+        name: 'OrderList',
         component: OrderList,
       },
       {
-        path: 'Cars',
+        path: 'cars',
+        name: 'Cars',
         component: Cars,
       },
       {
-        path: 'Car',
+        path: 'car/:id?',
+        name: 'Car',
         component: Car,
       },
       {
-        path: 'Error500',
+        path: 'categories',
+        name: 'Categories',
+        component: Categories,
+      },
+      {
+        path: 'cities',
+        name: 'Cities',
+        component: Cities,
+      },
+      {
+        path: 'points',
+        name: 'Points',
+        component: Points,
+      },
+      {
+        path: 'rates',
+        name: 'Rates',
+        component: Rates,
+      },
+      {
+        path: 'rate-types',
+        name: 'RateTypes',
+        component: RateTypes,
+      },
+      {
+        path: 'error500',
+        name: 'Error500',
         component: Error500,
       },
     ],
